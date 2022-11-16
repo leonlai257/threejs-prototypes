@@ -15,7 +15,6 @@ export default function Mahjong(props: MahjongProps) {
 
     const isPile = props.isPile || false;
 
-    console.log(isPile);
     useFrame((state, delta) => {
         if (isPile !== true) {
             const currentPosition = ref.current.position;

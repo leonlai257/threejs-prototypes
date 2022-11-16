@@ -1,12 +1,12 @@
 import type { NextPage } from 'next';
 import Mahjong from './mahjong';
 
-interface pilesProps {
-    piles: { id: number }[];
+export interface PilesProps {
+    id: number;
 }
 
-const Piles = (props: pilesProps) => {
-    const player_one_piles = props.piles;
+const Piles = (props: PilesProps[]) => {
+    const player_one_piles = props;
     console.log(player_one_piles);
     return (
         <>

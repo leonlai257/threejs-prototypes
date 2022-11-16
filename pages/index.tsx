@@ -1,65 +1,57 @@
-import { Canvas, invalidate, useThree } from '@react-three/fiber';
 import type { NextPage } from 'next';
-import styles from '../styles/Home.module.css';
 import Table from './table';
 import Mahjong from './mahjong';
-import Piles from './piles';
-import { useState } from 'react';
-import create from 'zustand';
+import { PilesProps } from './piles';
+import React, { useState } from 'react';
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 
-const [hand, setHand] = useState([
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-    { id: 5 },
-    { id: 6 },
-    { id: 7 },
-    { id: 8 },
-    { id: 9 },
-    { id: 10 },
-    { id: 11 },
-    { id: 12 },
-    { id: 13 },
-]);
-
-const [piles, setPile] = useState([]);
-
-const onHandClick = (id: number) => {
-    console.log('Player hand tile ', id);
-    const index = hand.findIndex((tile: any) => tile.id === id);
-    if (index !== -1) {
-        setPile((piles: any) => [...piles, hand[index]]);
-        setHand((hand: any) => hand.filter((tile: any) => tile.id !== id));
-        // player_one_piles.push(hand.splice(index, 1)[0]);
-    }
-};
-
-// const useHandStore = create((set) => ({
-//     hand: [],
-//     addHand: (id: number, position: { x: number; y: number; z: number }) =>
-//         set((state: any) => ({
-//             mahjongs: [...state.mahjongs, { id: id, position: position }],
-//         })),
-//     getHand: () => hand,
-// }));
-
-const usePileStore = create((set) => ({
-    piles: [],
-    addPile: (id: number) =>
-        set((state: any) => ({ piles: [...state.piles, { id: id }] })),
-}));
-
-// const
+interface HandProps {
+    id: number;
+}
 
 const Home: NextPage = () => {
-    // const addMahjong = useMahjongStore((state: any) => state.addMahjong);
-    // const handStore = useHandStore();
+    const [pool, setPool] = useState([]);
+
+    const [hand, setHand] = useState<HandProps[]>([
+        // { id: 1 },
+        // { id: 2 },
+        // { id: 3 },
+        // { id: 4 },
+        // { id: 5 },
+        // { id: 6 },
+        // { id: 7 },
+        // { id: 8 },
+        // { id: 9 },
+        // { id: 10 },
+        // { id: 11 },
+        // { id: 12 },
+        // { id: 13 },
+    ]);
+
+    const [piles, setPile] = useState<PilesProps[]>([]);
+
+    const onHandClick = (id: number) => {
+        console.log('Player hand tile ', id);
+        const index = hand.findIndex((tile: any) => tile.id === id);
+        if (index !== -1) {
+            setPile([...piles, hand[index]]);
+            setHand((hand: any[]) =>
+                hand.filter((tile: any) => tile.id !== id)
+            );
+        }
+    };
 
     return (
         <>
-            <ambientLight />
-            <pointLight position={[10, 10, 10]} />
+            <OrbitControls />
+            <PerspectiveCamera
+                makeDefault
+                fov={60}
+                near={0.1}
+                far={1000}
+                position={[0, 2, 2]}
+                rotation={[0, 0, 0]}
+            />
             <Table position={[0, 0, 0]} />(
             {hand.map((tile) => (
                 <Mahjong
@@ -69,13 +61,26 @@ const Home: NextPage = () => {
                     }}
                 />
             ))}
-            {/* {player_one_piles.map((tile) => (
+            {piles.map((pile) => (
                 <Mahjong
-                    position={[-0.28 + (tile.id - 1) * 0.04, 1.024, 0.6]}
-                    rotation={[0, Math.PI, 0]}
+                    key={pile.id}
+                    meshProps={{
+                        position: [
+                            -0.28 +
+                                (piles.findIndex(
+                                    (tile) => tile.id === pile.id
+                                ) -
+                                    1) *
+                                    0.04,
+                            1.024,
+                            0.6,
+                        ],
+                        rotation: [Math.PI / 2, 0, 0],
+                    }}
+                    isPile={true}
                 />
-            ))} */}
-            {<Piles piles={piles} />})
+            ))}
+            )
         </>
     );
 };
