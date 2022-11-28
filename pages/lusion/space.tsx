@@ -137,7 +137,7 @@ const Space = () => {
     return (
         <group ref={space}>
             <effectComposer ref={composer} args={[gl]}>
-                <unrealBloomPass threshold={0.62} strength={5} radius={1} />
+                {/* <unrealBloomPass threshold={0.62} strength={5} radius={1} /> */}
             </effectComposer>
 
             <group>

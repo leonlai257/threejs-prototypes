@@ -49,7 +49,7 @@ const WorldScene = (props: { radius: number }) => {
 
             <Suspense fallback={<FallbackMaterial url="/sheko.jpg" />}>
                 <Preload all />
-                <VideoMaterial url="/360test3.mp4" />
+                <VideoMaterial url="/360test8k.mp4" />
             </Suspense>
         </mesh>
     );
