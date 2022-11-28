@@ -18,10 +18,13 @@ const SpaceShip = (props: ThreeElements['mesh']) => {
                 length={20}
                 decay={1}
                 attenuation={(t) => t * t}>
-                <group ref={spaceship} {...props} dispose={null}>
+                <group
+                    ref={spaceship}
+                    rotation={[0, Math.PI, 0]}
+                    dispose={null}>
                     <mesh
                         receiveShadow
-                        geometry={nodes.Striker.geometry}
+                        geometry={(nodes['Stiker'] as THREE.Mesh).geometry}
                         material={materials.Texture}>
                         {/* <meshStandardMaterial {...materials} /> */}
                     </mesh>

@@ -36,26 +36,17 @@ const LusionClone: NextPage = () => {
                 horizontal={false} // Can also scroll horizontally (default: false)
                 infinite={false} // Can also scroll infinitely (default: false)
             >
-                <KeyboardControls
-                    map={[
-                        { name: 'forward', keys: ['ArrowUp', 'w', 'W'] },
-                        { name: 'backward', keys: ['ArrowDown', 's', 'S'] },
-                        { name: 'left', keys: ['ArrowLeft', 'a', 'A'] },
-                        { name: 'right', keys: ['ArrowRight', 'd', 'D'] },
-                        { name: 'jump', keys: ['Space'] },
-                    ]}>
-                    <PerspectiveCamera
-                        makeDefault
-                        ref={camera}
-                        fov={60}
-                        near={0.1}
-                        far={1000}
-                        position={[-80, 0, 0]}
-                        rotation={[0, Math.PI + Math.PI / 2, 0]}>
-                        <SpaceShip rotation={[0, Math.PI, 0]} />
-                    </PerspectiveCamera>
-                    <Space />
-                </KeyboardControls>
+                <PerspectiveCamera
+                    makeDefault
+                    ref={camera}
+                    fov={60}
+                    near={0.1}
+                    far={1000}
+                    position={[-80, 0, 0]}
+                    rotation={[0, Math.PI + Math.PI / 2, 0]}>
+                    <SpaceShip />
+                </PerspectiveCamera>
+                <Space />
             </ScrollControls>
         </>
     );

@@ -3,7 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 const Rig = ({ children }: any) => {
-    const ref = useRef();
+    const ref = useRef<THREE.Group>(null!);
     const vec = new THREE.Vector3();
     const { camera, mouse } = useThree();
 

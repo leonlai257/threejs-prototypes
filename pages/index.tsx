@@ -55,6 +55,7 @@ const Home: NextPage = () => {
             <Table position={[0, 0, 0]} />(
             {hand.map((tile) => (
                 <Mahjong
+                    key={tile.id}
                     meshProps={{
                         position: [-0.28 + (tile.id - 1) * 0.04, 1.024, 1],
                         onClick: () => onHandClick(tile.id),

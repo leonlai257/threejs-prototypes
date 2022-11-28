@@ -1,9 +1,7 @@
-import { Canvas, extend, useFrame, useThree } from '@react-three/fiber';
-import React, { Suspense, useRef } from 'react';
-import '../styles/globals.css';
+import { Preload } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
 import type { AppProps } from 'next/app';
-import Head from 'next/head';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (

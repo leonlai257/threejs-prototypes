@@ -1,21 +1,16 @@
-import {
-    Effects,
-    Html,
-    Stars,
-    Trail,
-    useKeyboardControls,
-    useScroll,
-} from '@react-three/drei';
-import { ThreeElements, useFrame, extend } from '@react-three/fiber';
+import { Effects, Html, Stars, Trail, useScroll } from '@react-three/drei';
+import { ThreeElements, useFrame, extend, useThree } from '@react-three/fiber';
 import { UnrealBloomPass } from 'three-stdlib';
+import { EffectComposer } from '@react-three/postprocessing';
 import { useRef } from 'react';
 import * as THREE from 'three';
 import Title from './title';
+import { cp } from 'fs';
 
-extend({ UnrealBloomPass });
+extend({ EffectComposer, UnrealBloomPass });
 
 interface HyperLightProps {
-    position: THREE.Vector3;
+    meshProps: ThreeElements['mesh'];
     material: {
         color: number;
         emissive: number;
@@ -42,7 +37,7 @@ const colors = [
     },
 ];
 
-const HyperLight = (props: ThreeElements['mesh']) => {
+const HyperLight = (props: HyperLightProps) => {
     const hyperLight = useRef<THREE.Mesh>(null!);
 
     useFrame((state, delta) => {
@@ -55,7 +50,7 @@ const HyperLight = (props: ThreeElements['mesh']) => {
 
     return (
         <mesh
-            {...props}
+            {...props.meshProps}
             ref={hyperLight}
             geometry={cylinderGeometry}
             rotation={[0, 0, Math.PI / 2]}>
@@ -88,6 +83,9 @@ const Comets = ({ speed = 6, ...props }) => {
 };
 
 const Space = () => {
+    const { gl } = useThree();
+    const composer = useRef() as any;
+
     const scroll = useScroll();
     const space = useRef<THREE.Group>(null!);
     const welcomeText = useRef(null!);
@@ -98,15 +96,17 @@ const Space = () => {
 
     for (let i = 0; i < lightCount; i++) {
         hyperLight.push({
-            position: new THREE.Vector3(
-                (Math.random() - 0.5) * 200,
-                Math.cos(i * 10 * 2) *
-                    lightTunnelRadius *
-                    Math.max(0.05, Math.random()),
-                Math.sin(i * 10 * 2) *
-                    lightTunnelRadius *
-                    Math.max(0.05, Math.random())
-            ),
+            meshProps: {
+                position: new THREE.Vector3(
+                    (Math.random() - 0.5) * 200,
+                    Math.cos(i * 10 * 2) *
+                        lightTunnelRadius *
+                        Math.max(0.05, Math.random()),
+                    Math.sin(i * 10 * 2) *
+                        lightTunnelRadius *
+                        Math.max(0.05, Math.random())
+                ),
+            },
             material: colors[Math.floor(Math.random() * colors.length)],
         });
     }
@@ -127,31 +127,25 @@ const Space = () => {
         });
     }
 
-    const [, get] = useKeyboardControls();
-    const { forward, backward, left, right, jump } = get();
-    console.log(forward);
-
     useFrame(() => {
         const r1 = scroll.range(0 / 2, 2 / 2);
         const text1 = scroll.visible(1 / 2, 2 / 2);
         space.current.position.x = 20 - r1 * 100;
         // welcomeText.current.visible = text1 || false;
-
-        console.log(forward, backward);
     });
 
     return (
         <group ref={space}>
-            <Effects disableGamma>
+            <effectComposer ref={composer} args={[gl]}>
                 <unrealBloomPass threshold={0.62} strength={5} radius={1} />
-            </Effects>
+            </effectComposer>
 
             <group>
                 {hyperLight.map((hyperLight, index) => {
                     return (
                         <HyperLight
                             key={index}
-                            position={hyperLight.position}
+                            meshProps={hyperLight.meshProps}
                             material={hyperLight.material}
                         />
                     );
@@ -172,7 +166,7 @@ const Space = () => {
                 speed={2}
             />
 
-            <Title ref={welcomeText} text={'WELCOME!'} />
+            <Title text={'WELCOME!'} />
         </group>
     );
 };
