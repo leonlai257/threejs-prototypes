@@ -29,7 +29,7 @@ function Watch(props: ThreeElements['mesh']) {
 
     return (
         <group ref={ref}>
-            <primitive object={obj}></primitive>
+            <primitive object={obj} />
         </group>
     );
 }

@@ -43,7 +43,7 @@ const CoReality = () => {
         {
             title: 'Shoes',
             meshProps: {
-                position: [0, 0, radius],
+                position: [radius / 2, -radius / 4, radius],
                 rotation: [0, Math.PI / 2, 0],
             },
             event: {
@@ -52,20 +52,20 @@ const CoReality = () => {
             },
         },
         {
-            title: 'Room1',
+            title: 'Watch Trailer',
             meshProps: {
                 position: [0, 0, radius],
                 rotation: [0, Math.PI, 0],
             },
-            event: { action: actionType.room, param: 'room1' },
+            event: { action: actionType.focus, param: 'waterfall.mp4' },
         },
         {
-            title: 'Mahjong',
+            title: 'Room1',
             meshProps: {
                 position: [0, 0, radius],
                 rotation: [0, -Math.PI / 2, 0],
             },
-            event: { action: actionType.route, param: '/' },
+            event: { action: actionType.room, param: 'room1' },
         },
     ]);
 

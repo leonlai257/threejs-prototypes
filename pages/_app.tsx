@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             }}>
             <Canvas>
                 <ambientLight />
-                <directionalLight position={[150, 150, 150]} intensity={0.55} />
+                <directionalLight position={[0, 0, 0]} intensity={1} />
                 <Component {...pageProps} />
             </Canvas>
         </div>

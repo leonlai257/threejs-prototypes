@@ -1,5 +1,7 @@
 import { Html } from '@react-three/drei';
 import { ThreeElements, useFrame } from '@react-three/fiber';
+import { Dialog } from '@src/components/atoms/dialog';
+import { Container } from '@src/components/atoms/container';
 import { styled } from '@stitches/react';
 import { useRouter } from 'next/router';
 import { useRef, useState } from 'react';
@@ -8,6 +10,7 @@ import * as THREE from 'three';
 export enum actionType {
     route = 'route',
     dialog = 'dialog',
+    focus = 'focus',
     room = 'room',
 }
 
@@ -67,11 +70,14 @@ const HotSpots = (props: HotSpotProps) => {
                                 </Text>
                             </Html>
                             <Html position={[-0.3, -0.1, 0]}>
-                                <Text>
-                                    {item.event.action === 'dialog' && clicked
-                                        ? item.event.param
-                                        : ''}
-                                </Text>
+                                <Dialog>
+                                    <Text>
+                                        {item.event.action === 'dialog' &&
+                                        clicked
+                                            ? item.event.param
+                                            : ''}
+                                    </Text>
+                                </Dialog>
                             </Html>
                             <Html key={index}>
                                 <Button
