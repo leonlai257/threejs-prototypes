@@ -1,89 +1,55 @@
 import type { NextPage } from 'next';
-import Table from './table';
-import Mahjong from './mahjong';
-import { PilesProps } from './piles';
-import React, { useState } from 'react';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
+import React, {
+    useRef,
+    useState,
+    useLayoutEffect,
+    useEffect,
+    useMemo,
+} from 'react';
+import * as THREE from 'three';
+import {
+    OrbitControls,
+    PerspectiveCamera,
+    ScrollControls,
+    Scroll,
+    useScroll,
+    CameraShake,
+    KeyboardControls,
+} from '@react-three/drei';
+import Space from './space';
+import { useFrame } from '@react-three/fiber';
+import SpaceShip from './ship';
+import Rig from './rig';
+import Title from './title';
 
-interface HandProps {
-    id: number;
-}
+const LusionClone: NextPage = () => {
+    const camera = useRef();
+    const ship = useRef();
 
-const Home: NextPage = () => {
-    const [pool, setPool] = useState([]);
-
-    const [hand, setHand] = useState<HandProps[]>([
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-        { id: 4 },
-        { id: 5 },
-        { id: 6 },
-        { id: 7 },
-        { id: 8 },
-        { id: 9 },
-        { id: 10 },
-        { id: 11 },
-        { id: 12 },
-        { id: 13 },
-    ]);
-
-    const [piles, setPile] = useState<PilesProps[]>([]);
-
-    const onHandClick = (id: number) => {
-        console.log('Player hand tile ', id);
-        const index = hand.findIndex((tile: any) => tile.id === id);
-        if (index !== -1) {
-            setPile([...piles, hand[index]]);
-            setHand((hand: any[]) =>
-                hand.filter((tile: any) => tile.id !== id)
-            );
-        }
-    };
-
+    useFrame((state, delta) => {});
     return (
         <>
-            <OrbitControls />
-            <PerspectiveCamera
-                makeDefault
-                fov={60}
-                near={0.1}
-                far={1000}
-                position={[0, 2, 2]}
-                rotation={[0, 0, 0]}
-            />
-            <Table position={[0, 0, 0]} />(
-            {hand.map((tile) => (
-                <Mahjong
-                    key={tile.id}
-                    meshProps={{
-                        position: [-0.28 + (tile.id - 1) * 0.04, 1.024, 1],
-                        onClick: () => onHandClick(tile.id),
-                    }}
-                />
-            ))}
-            {piles.map((pile) => (
-                <Mahjong
-                    key={pile.id}
-                    meshProps={{
-                        position: [
-                            -0.28 +
-                                (piles.findIndex(
-                                    (tile) => tile.id === pile.id
-                                ) -
-                                    1) *
-                                    0.04,
-                            1.024,
-                            0.6,
-                        ],
-                        rotation: [Math.PI / 2, 0, 0],
-                    }}
-                    isPile={true}
-                />
-            ))}
-            )
+            <ScrollControls
+                pages={2} // Each page takes 100% of the height of the canvas
+                distance={1} // A factor that increases scroll bar travel (default: 1)
+                damping={4} // Friction, higher is faster (default: 4)
+                horizontal={false} // Can also scroll horizontally (default: false)
+                infinite={false} // Can also scroll infinitely (default: false)
+            >
+                <PerspectiveCamera
+                    makeDefault
+                    ref={camera}
+                    fov={60}
+                    near={0.1}
+                    far={1000}
+                    position={[-80, 0, 0]}
+                    rotation={[0, Math.PI + Math.PI / 2, 0]}>
+                    <SpaceShip />
+                </PerspectiveCamera>
+                <Space />
+            </ScrollControls>
         </>
     );
 };
 
-export default Home;
+export default LusionClone;

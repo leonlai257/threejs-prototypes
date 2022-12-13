@@ -1,6 +1,6 @@
 import { Html } from '@react-three/drei';
 import { ThreeElements, useFrame } from '@react-three/fiber';
-import { Dialog } from '@src/components/atoms/dialog';
+import { Dialog } from '@src/components/atoms/Dialog';
 import { Container } from '@src/components/atoms/container';
 import { styled } from '@stitches/react';
 import { useRouter } from 'next/router';

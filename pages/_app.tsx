@@ -1,4 +1,3 @@
-import { Preload } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import type { AppProps } from 'next/app';
 import '../styles/globals.css';

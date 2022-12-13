@@ -24,7 +24,7 @@ const SpaceShip = (props: ThreeElements['mesh']) => {
                     dispose={null}>
                     <mesh
                         receiveShadow
-                        geometry={(nodes['Stiker'] as THREE.Mesh).geometry}
+                        geometry={(nodes['Striker'] as THREE.Mesh).geometry}
                         material={materials.Texture}>
                         {/* <meshStandardMaterial {...materials} /> */}
                     </mesh>
