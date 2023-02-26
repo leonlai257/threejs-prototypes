@@ -1,15 +1,21 @@
 import { Canvas } from '@react-three/fiber';
+import NavBarComponent from 'components/navBar';
 import UI from 'components/ui';
 import Config, { Lobby } from 'config/app';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Route, Switch } from 'wouter';
 import Coreality from '.';
 import '../styles/globals.css';
 import RoomScene, { AnimationTypes } from './[roomId]';
+import Information from 'components/information';
+import Entrance from 'components/entrance';
+import { globalStyles } from '@src/stitches.config';
 
 export default function App({ pageProps }: AppProps) {
+    const [showInfo, setShowInfo] = useState(false);
+    const [atEntrance, setAtEntrance] = useState(true);
     const entryLobby: Lobby | undefined = Config.getEntryPoint();
     const [lobby] = useState<Lobby | undefined>(entryLobby);
 
@@ -17,7 +23,7 @@ export default function App({ pageProps }: AppProps) {
     const [transition, setTransition] = useState<string>('');
     const [popup, setPopup] = useState<string>('');
 
-    const [musicVolume, setMusicVolume] = useState(0.0);
+    const [musicVolume, setMusicVolume] = useState(1.0);
 
     const [animation, setAnimation] = useState<AnimationTypes>(
         AnimationTypes.FADEOUT,
@@ -41,6 +47,14 @@ export default function App({ pageProps }: AppProps) {
         ...globalStates,
     };
 
+    useEffect(() => {
+        globalStyles();
+    }, []);
+
+    useEffect(() => {
+        console.log('Music volume:', musicVolume);
+    }, [musicVolume]);
+
     return (
         <div
             style={{
@@ -53,15 +67,13 @@ export default function App({ pageProps }: AppProps) {
             }}
         >
             <Head>
-                <title>CoReality Boilerplate</title>
-                <meta
-                    name="CoReality Boilerplate"
-                    content="CoReality Boilerplate by Gusto"
-                />
+                <title>three.js prototype</title>
+                <meta name="three.js prototype" content="three.js prototype" />
             </Head>
             <Canvas>
                 <ambientLight />
-                <directionalLight position={[0, 0, 0]} intensity={1} />
+                <pointLight position={[0, 10, 0]} intensity={1} castShadow />
+                <pointLight position={[0, -5, 0]} intensity={1} />
                 <UI
                     popupUrl={popup}
                     room={currentRoom}
@@ -73,11 +85,16 @@ export default function App({ pageProps }: AppProps) {
                         <Coreality {...pageProps} />
                     </Route>
                     <Route path="/:roomId">
-                        <RoomScene {...pageProps} />
+                        <RoomScene {...pageProps} rooms={lobby?.rooms} />
                     </Route>
                 </Switch>
-                {/* <Component {...pageProps} /> */}
             </Canvas>
+            {atEntrance && <Entrance enter={setAtEntrance} />}
+            <NavBarComponent
+                soundSetter={setMusicVolume}
+                infoSetter={setShowInfo}
+            />
+            <Information show={showInfo} />
         </div>
     );
 }

@@ -7,6 +7,7 @@ export * from './Page';
 export * from './IconWrapper';
 export * from './Dialog';
 export * from './Button';
+export * from './flex';
 
 export * from './Popup';
 export * from './Room';
