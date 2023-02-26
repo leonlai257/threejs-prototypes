@@ -1,5 +1,5 @@
 import { Billboard, Text } from '@react-three/drei';
-import { HotspotAction, Lobby } from 'config/app';
+import { HotspotAction } from 'config/app';
 import { useState } from 'react';
 import { DoubleSide, Vector3 } from 'three';
 
@@ -10,7 +10,7 @@ export interface HotspotProps {
     vDegree: number;
     hDegree: number;
     isHtml: string;
-    lobby: Lobby;
+    radius: number;
     setTransition?: (transition: string) => void;
     setPopup?: (popup: string) => void;
 }
@@ -19,9 +19,14 @@ const defaultProps = {
     slug: '',
     hDegree: 0,
     vDegree: 90,
+    radius: 10,
 };
 
-function anglesToXYZ(hDegree?: number, vDegree?: number, radius?: number) {
+export function anglesToXYZ(
+    hDegree?: number,
+    vDegree?: number,
+    radius?: number,
+) {
     hDegree = hDegree ? hDegree : 0;
     vDegree = vDegree ? vDegree : 0;
     radius = radius ? radius : 0;
@@ -75,7 +80,7 @@ const Hotspot = (props: Partial<HotspotProps>) => {
                     position={anglesToXYZ(
                         props.hDegree,
                         props.vDegree,
-                        props.lobby?.radius
+                        props.radius,
                     )}
                 >
                     {showInfo ? (

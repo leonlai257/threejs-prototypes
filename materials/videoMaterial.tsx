@@ -8,7 +8,6 @@ function VideoMaterial({ url }: { url: string }) {
 
     return (
         <meshBasicMaterial
-            depthWrite={false}
             map={texture}
             toneMapped={false}
             side={BackSide}

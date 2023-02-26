@@ -11,7 +11,7 @@
     "dependencies": {
         "@commitlint/cli": "^17.3.0",
         "@commitlint/config-conventional": "^17.3.0",
-        "@react-three/drei": "^9.45.0",
+        "@react-three/drei": "^9.56.27",
         "@react-three/fiber": "^8.9.1",
         "@react-three/postprocessing": "^2.7.0",
         "@stitches/react": "^1.2.8",

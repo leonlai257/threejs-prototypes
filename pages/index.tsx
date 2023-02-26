@@ -1,13 +1,15 @@
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import DirectionalAudio from 'components/directionalAudio';
-import Hotspot from 'components/hotspot';
-import { Minimap } from 'components/minimap';
-// import { Sneaker } from 'components/object3d';
+import { DisplayBoxController } from 'components/displayBox';
+import GustoLogo from 'components/gusto';
+import Screen from 'components/screen';
+import UFO from 'components/ufo';
 import World from 'components/world';
 import Config, { Lobby } from 'config/app';
 import BlurTransition from 'effects/blurTransition';
 import { createRef, useEffect, useState } from 'react';
+import * as THREE from 'three';
 import { useLocation } from 'wouter';
 import { AnimationTypes } from './[roomId]';
 export interface CoRealityProps {
@@ -26,9 +28,9 @@ export interface CoRealityProps {
 const Coreality = (props: CoRealityProps) => {
     const {
         currentRoom,
+        setCurrentRoom,
         transition,
         setTransition,
-        popup,
         setPopup,
         musicVolume,
         setAnimation,
@@ -46,23 +48,27 @@ const Coreality = (props: CoRealityProps) => {
 
     const [, push] = useLocation();
 
+    const displayItemProps = {
+        vDegree: 125,
+        scale: new THREE.Vector3(0.9, 0.9, 0.9),
+    };
+
     useFrame(() => {
         if (transition) {
             setFov(fov - 1);
         }
-
         if (fov <= 30) {
-            if (transition === 'world') {
+            if (transition === 'world' || transition === '/') {
                 setFov(75);
                 camera.position.set(
                     lobby?.defaultCameraPosition.x as number,
                     lobby?.defaultCameraPosition.y as number,
                     lobby?.defaultCameraPosition.z as number,
                 );
+                setCurrentRoom('world');
+            } else {
+                push(`/${transition}`);
             }
-
-            // setRoom(transition);
-            push(`/${transition}`);
             setTransition('');
         }
 
@@ -90,35 +96,72 @@ const Coreality = (props: CoRealityProps) => {
                 <World
                     radius={radius}
                     imageUrl={lobby?.sphereImageUrl}
-                    videoUrl={lobby?.sphereVideoUrl}
                     videoUrlLowRes={lobby?.sphereVideoUrlLowRes}
+                    setCurrentRoom={setCurrentRoom}
                 />
 
-                {/* <Sneaker
-                    model={{
-                        path: '/sneaker.gltf',
-                        node: 'Sneaker',
-                        material: 'Hologram',
-                    }}
-                    groupProps={{
-                        scale: [0.08, 0.08, 0.08],
-                        position: [0.8118169009, 0.1388263049, -0.3628781841],
-                    }}
-                    meshProps={{
-                        rotation: [1.57 + Math.PI * 0.18, 0, -0.32],
-                    }}
-                /> */}
-                {/* <MaskScene radius={radius} /> */}
-                {popup ||
-                    lobby?.hotspots?.map((hotspot) => (
-                        <Hotspot
-                            key={hotspot.slug}
-                            {...hotspot}
-                            lobby={{ ...lobby, radius }}
-                            setPopup={setPopup}
-                            setTransition={setTransition}
-                        />
-                    ))}
+                {/* Curtain side*/}
+                <DisplayBoxController
+                    slug={'red-shoe'}
+                    hDegree={97}
+                    vDegree={displayItemProps.vDegree - 2}
+                    radius={radius * 0.96}
+                    scale={displayItemProps.scale}
+                    setPopup={setPopup}
+                    setTransition={setTransition}
+                />
+
+                <DisplayBoxController
+                    slug={'oxford-shoe'}
+                    hDegree={140}
+                    vDegree={displayItemProps.vDegree + 11.5}
+                    radius={radius * 0.73}
+                    scale={displayItemProps.scale}
+                    setPopup={setPopup}
+                    setTransition={setTransition}
+                />
+                <DisplayBoxController
+                    slug={'bag'}
+                    hDegree={190}
+                    vDegree={displayItemProps.vDegree + 4}
+                    radius={radius * 0.83}
+                    scale={displayItemProps.scale}
+                    setPopup={setPopup}
+                    setTransition={setTransition}
+                />
+
+                {/* Studio side*/}
+                <DisplayBoxController
+                    slug={'glasses'}
+                    hDegree={5}
+                    vDegree={displayItemProps.vDegree}
+                    radius={radius * 0.96}
+                    scale={displayItemProps.scale}
+                    setPopup={setPopup}
+                    setTransition={setTransition}
+                />
+                <DisplayBoxController
+                    slug={'hat'}
+                    hDegree={-50}
+                    vDegree={displayItemProps.vDegree + 4}
+                    radius={radius * 0.88}
+                    scale={displayItemProps.scale}
+                    setPopup={setPopup}
+                    setTransition={setTransition}
+                />
+
+                {/* 3D cosmetics */}
+                <UFO hDegree={60} vDegree={85} radius={radius * 0.75} />
+                <GustoLogo hDegree={60} vDegree={85} radius={radius * 0.7} />
+                <Screen
+                    hDegree={240}
+                    vDegree={90}
+                    radius={radius * 0.9}
+                    groupProps={{}}
+                    path={
+                        'https://coreality-showroom-testing.s3.ap-east-1.amazonaws.com/gustoTeaser.mp4'
+                    }
+                />
             </group>
 
             <DirectionalAudio
@@ -136,9 +179,7 @@ const Coreality = (props: CoRealityProps) => {
                 near={0.1}
                 far={1000}
                 position={lobby?.defaultCameraPosition}
-            >
-                <Minimap />
-            </PerspectiveCamera>
+            ></PerspectiveCamera>
 
             <OrbitControls
                 enableZoom={false}
