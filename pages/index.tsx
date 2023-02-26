@@ -1,88 +1,151 @@
-import type { NextPage } from 'next';
-import Table from './table';
-import Mahjong from './mahjong';
-import { PilesProps } from './piles';
-import React, { useState } from 'react';
 import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-
-interface HandProps {
-    id: number;
+import { useFrame, useThree } from '@react-three/fiber';
+import DirectionalAudio from 'components/directionalAudio';
+import Hotspot from 'components/hotspot';
+import { Minimap } from 'components/minimap';
+// import { Sneaker } from 'components/object3d';
+import World from 'components/world';
+import Config, { Lobby } from 'config/app';
+import BlurTransition from 'effects/blurTransition';
+import { createRef, useEffect, useState } from 'react';
+import { useLocation } from 'wouter';
+import { AnimationTypes } from './[roomId]';
+export interface CoRealityProps {
+    currentRoom: string;
+    setCurrentRoom: (room: string) => void;
+    transition: string;
+    setTransition: (room: string) => void;
+    popup: string;
+    setPopup: (popup: string) => void;
+    musicVolume: number;
+    setMusicVolume: (volume: number) => void;
+    animation: AnimationTypes;
+    setAnimation: (animation: AnimationTypes) => void;
 }
 
-const Home: NextPage = () => {
-    const [pool, setPool] = useState([]);
+const Coreality = (props: CoRealityProps) => {
+    const {
+        currentRoom,
+        transition,
+        setTransition,
+        popup,
+        setPopup,
+        musicVolume,
+        setAnimation,
+    } = props;
 
-    const [hand, setHand] = useState<HandProps[]>([
-        { id: 1 },
-        { id: 2 },
-        { id: 3 },
-        { id: 4 },
-        { id: 5 },
-        { id: 6 },
-        { id: 7 },
-        { id: 8 },
-        { id: 9 },
-        { id: 10 },
-        { id: 11 },
-        { id: 12 },
-        { id: 13 },
-    ]);
+    const { camera } = useThree();
+    const cameraRef = createRef();
 
-    const [piles, setPile] = useState<PilesProps[]>([]);
+    const entryLobby: Lobby | undefined = Config.getEntryPoint();
+    const [lobby] = useState<Lobby | undefined>(entryLobby);
 
-    const onHandClick = (id: number) => {
-        console.log('Player hand tile ', id);
-        const index = hand.findIndex((tile: any) => tile.id === id);
-        if (index !== -1) {
-            setPile([...piles, hand[index]]);
-            setHand((hand: any[]) =>
-                hand.filter((tile: any) => tile.id !== id)
-            );
+    const radius = 10;
+
+    const [fov, setFov] = useState(75);
+
+    const [, push] = useLocation();
+
+    useFrame(() => {
+        if (transition) {
+            setFov(fov - 1);
         }
-    };
+
+        if (fov <= 30) {
+            if (transition === 'world') {
+                setFov(75);
+                camera.position.set(
+                    lobby?.defaultCameraPosition.x as number,
+                    lobby?.defaultCameraPosition.y as number,
+                    lobby?.defaultCameraPosition.z as number,
+                );
+            }
+
+            // setRoom(transition);
+            push(`/${transition}`);
+            setTransition('');
+        }
+
+        /*  Commented the following code because calling function passed by props every frame cause performance issue. */
+        // if (musicVolume <= 1) {
+        //     if (transition && transition !== 'world') {
+        //         setMusicVolume(musicVolume + 0.05);
+        //     }
+        // }
+
+        // if (musicVolume >= 0) {
+        //     if (transition && transition === 'world') {
+        //         setMusicVolume(Math.max(musicVolume - 0.05, 0));
+        //     }
+        // }
+    });
+
+    useEffect(() => {
+        if (transition !== '') setAnimation(AnimationTypes.TRANSITION);
+    }, [transition]);
 
     return (
         <>
-            <OrbitControls />
+            <group>
+                <World
+                    radius={radius}
+                    imageUrl={lobby?.sphereImageUrl}
+                    videoUrl={lobby?.sphereVideoUrl}
+                    videoUrlLowRes={lobby?.sphereVideoUrlLowRes}
+                />
+
+                {/* <Sneaker
+                    model={{
+                        path: '/sneaker.gltf',
+                        node: 'Sneaker',
+                        material: 'Hologram',
+                    }}
+                    groupProps={{
+                        scale: [0.08, 0.08, 0.08],
+                        position: [0.8118169009, 0.1388263049, -0.3628781841],
+                    }}
+                    meshProps={{
+                        rotation: [1.57 + Math.PI * 0.18, 0, -0.32],
+                    }}
+                /> */}
+                {/* <MaskScene radius={radius} /> */}
+                {popup ||
+                    lobby?.hotspots?.map((hotspot) => (
+                        <Hotspot
+                            key={hotspot.slug}
+                            {...hotspot}
+                            lobby={{ ...lobby, radius }}
+                            setPopup={setPopup}
+                            setTransition={setTransition}
+                        />
+                    ))}
+            </group>
+
+            <DirectionalAudio
+                audios={lobby?.audios}
+                groupProps={{}}
+                volume={musicVolume}
+            />
+
+            {transition && <BlurTransition />}
+
             <PerspectiveCamera
                 makeDefault
-                fov={60}
+                ref={cameraRef}
+                fov={fov}
                 near={0.1}
                 far={1000}
-                position={[0, 2, 2]}
-                rotation={[0, 0, 0]}
+                position={lobby?.defaultCameraPosition}
+            >
+                <Minimap />
+            </PerspectiveCamera>
+
+            <OrbitControls
+                enableZoom={false}
+                enableRotate={currentRoom === 'world'}
             />
-            <Table position={[0, 0, 0]} />(
-            {hand.map((tile) => (
-                <Mahjong
-                    meshProps={{
-                        position: [-0.28 + (tile.id - 1) * 0.04, 1.024, 1],
-                        onClick: () => onHandClick(tile.id),
-                    }}
-                />
-            ))}
-            {piles.map((pile) => (
-                <Mahjong
-                    key={pile.id}
-                    meshProps={{
-                        position: [
-                            -0.28 +
-                                (piles.findIndex(
-                                    (tile) => tile.id === pile.id
-                                ) -
-                                    1) *
-                                    0.04,
-                            1.024,
-                            0.6,
-                        ],
-                        rotation: [Math.PI / 2, 0, 0],
-                    }}
-                    isPile={true}
-                />
-            ))}
-            )
         </>
     );
 };
 
-export default Home;
+export default Coreality;
